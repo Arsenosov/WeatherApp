@@ -1,16 +1,13 @@
 package com.arsenosov.weatherapp.searchactivity
 
-import android.app.Activity
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.arsenosov.weatherapp.R
 import com.arsenosov.weatherapp.city.CityItem
 import com.arsenosov.weatherapp.util.Statable
@@ -71,6 +68,7 @@ class SearchActivity : AppCompatActivity(), Statable, SearchView.OnQueryTextList
                 tvSearchError.visibility = View.GONE
                 rvSearchCities.visibility = View.VISIBLE
             }
+            State.LOADING ->{}
         }
     }
 

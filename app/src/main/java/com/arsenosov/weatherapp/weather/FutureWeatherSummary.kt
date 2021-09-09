@@ -2,13 +2,13 @@ package com.arsenosov.weatherapp.weather
 
 import com.google.gson.annotations.SerializedName
 
-data class WeatherSummary(
+data class FutureWeatherSummary(
     @SerializedName("dt")
     val dt: Long,
-    @SerializedName("main")
-    val main: Main,
+    @SerializedName("temp")
+    val temp: Temperature,
+    @SerializedName("wind_speed")
+    val wind: Double,
     @SerializedName("weather")
-    val weather: Weather,
-    @SerializedName("wind")
-    val wind: Wind
+    val weather: Weather
 )

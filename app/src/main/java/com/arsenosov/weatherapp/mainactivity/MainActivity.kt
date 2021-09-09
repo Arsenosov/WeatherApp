@@ -1,34 +1,31 @@
 package com.arsenosov.weatherapp.mainactivity
 
-import android.Manifest
-import android.app.Activity
-import android.app.Application
 import android.content.Intent
-import android.content.pm.PackageManager
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.app.ActivityCompat
-import androidx.lifecycle.Observer
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.arsenosov.weatherapp.R
 import com.arsenosov.weatherapp.city.CityItem
 import com.arsenosov.weatherapp.searchactivity.SearchActivity
 import com.arsenosov.weatherapp.searchactivity.SearchActivity.Companion.SEARCH_RESULT_CITY
 import com.arsenosov.weatherapp.util.Statable
 import com.arsenosov.weatherapp.util.State
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
+import com.arsenosov.weatherapp.weather.WeatherRequestResult
+import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.layout_main.*
+import java.util.*
+import kotlin.math.roundToInt
 
 class MainActivity : AppCompatActivity(), Statable {
 
     private lateinit var myMainViewModel: MainViewModel
+    private lateinit var adapter: MainRecyclerViewAdapter
     private var city: CityItem? = null
 
     override var state: State = State.LOADING
@@ -63,20 +60,41 @@ class MainActivity : AppCompatActivity(), Statable {
 
         myMainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
         myMainViewModel.cityLive.observe(this, {
-            refreshUI(it)
+            checkRefreshUI(it)
         })
         myMainViewModel.stateLive.observe(this, {
             state = it
         })
+        myMainViewModel.weatherLive.observe(this, {
+            refreshUI(it)
+        })
+
+        adapter = MainRecyclerViewAdapter(emptyList())
+        rvFutureWeather.layoutManager = LinearLayoutManager(this)
+        rvFutureWeather.adapter = adapter
+
         if (city == null)
             myMainViewModel.getLocation(this)
-
     }
 
-    private fun refreshUI(cityItem: CityItem) {
+    private fun checkRefreshUI(cityItem: CityItem) {
         if (cityItem != city) {
-            TODO("refresh")
+            myMainViewModel.loadWeather(cityItem)
+            city = cityItem
         }
+    }
+
+    private fun refreshUI(request: WeatherRequestResult) {
+        adapter.refreshItems(request.futureWeather)
+        val current = request.currentWeather
+        Glide.with(this)
+            .load("$BASE_IMG_URL${current.weather.icon}.png")
+            .into(ivMainWeather)
+        tvCurrentCity.text = city.toString()
+        tvMainTemperature.text = current.temp.roundToInt().toString()
+        tvMainFeelsTemperature.text = resources.getString(R.string.weather_feels_temperature, current.feelsTemp.roundToInt())
+        tvMainWind.text = resources.getString(R.string.weather_wind, current.wind.roundToInt())
+        tvMainWeather.text = current.weather.description.capitalize(Locale.getDefault())
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -91,17 +109,17 @@ class MainActivity : AppCompatActivity(), Statable {
         return super.onOptionsItemSelected(item)
     }
 
-    var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+    private var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == RESULT_OK) {
             val data: Intent? = result.data
             data?.let {
-                city = it.getParcelableExtra(SEARCH_RESULT_CITY)
-                Toast.makeText(this, city.toString(), Toast.LENGTH_LONG).show()
+                checkRefreshUI(it.getParcelableExtra(SEARCH_RESULT_CITY)!!)
             }
         }
     }
 
     companion object {
         const val PERMISSIONS_REQUEST_CODE = 1
+        const val BASE_IMG_URL = "https://openweathermap.org/img/wn/"
     }
 }

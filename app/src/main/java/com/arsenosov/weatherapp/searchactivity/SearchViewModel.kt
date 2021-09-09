@@ -9,7 +9,6 @@ import com.arsenosov.weatherapp.App.Companion.API_KEY
 import com.arsenosov.weatherapp.city.CityApi
 import com.arsenosov.weatherapp.city.CityItem
 import com.arsenosov.weatherapp.util.State
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -26,11 +25,11 @@ class SearchViewModel(app: Application): AndroidViewModel(app) {
         viewModelScope.launch {
             try {
                 val result = cityApi.getCitiesList(cityName, API_KEY)
-                citiesLive.value = result.list
+                citiesLive.value = result
                 stateLive.value = State.SUCCESSFUL
             } catch (e: Exception) {
                 stateLive.value = State.ERROR
-                errorLive.value = e.localizedMessage
+                errorLive.value = "An error has occurred. Check your connection or try again later."
             }
         }
     }

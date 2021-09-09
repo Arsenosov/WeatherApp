@@ -3,4 +3,6 @@
     <string name="current_location">Current Location</string>
     <string name="weather_wind">Wind: %1$d m/s</string>
     <string name="search_title">Search city</string>
+    <string name="weather_feels_temperature">Feels like %1$d °C</string>
+    <string name="weather_temperature">%1$d °C</string>
 </resources>
