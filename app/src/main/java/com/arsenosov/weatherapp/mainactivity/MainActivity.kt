@@ -1,13 +1,16 @@
 package com.arsenosov.weatherapp.mainactivity
 
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.arsenosov.weatherapp.R
 import com.arsenosov.weatherapp.city.CityItem
@@ -72,9 +75,10 @@ class MainActivity : AppCompatActivity(), Statable {
         adapter = MainRecyclerViewAdapter(emptyList())
         rvFutureWeather.layoutManager = LinearLayoutManager(this)
         rvFutureWeather.adapter = adapter
+        rvFutureWeather.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
 
-        if (city == null)
-            myMainViewModel.getLocation(this)
+        //if (city == null)
+        myMainViewModel.requestLocationPermission(this)
     }
 
     private fun checkRefreshUI(cityItem: CityItem) {
@@ -84,17 +88,32 @@ class MainActivity : AppCompatActivity(), Statable {
         }
     }
 
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == PERMISSIONS_REQUEST_CODE)
+            if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
+                Toast.makeText(this, "Choosing Moscow, RU as a default location", Toast.LENGTH_LONG).show()
+                checkRefreshUI(Moscow)
+            } else {
+                myMainViewModel.getLocation(this)
+            }
+    }
+
     private fun refreshUI(request: WeatherRequestResult) {
         adapter.refreshItems(request.futureWeather)
         val current = request.currentWeather
         Glide.with(this)
-            .load("$BASE_IMG_URL${current.weather.icon}.png")
+            .load("$BASE_IMG_URL${current.weather[0].icon}.png")
             .into(ivMainWeather)
         tvCurrentCity.text = city.toString()
-        tvMainTemperature.text = current.temp.roundToInt().toString()
+        tvMainTemperature.text = resources.getString(R.string.weather_temperature, current.temp.roundToInt())
         tvMainFeelsTemperature.text = resources.getString(R.string.weather_feels_temperature, current.feelsTemp.roundToInt())
         tvMainWind.text = resources.getString(R.string.weather_wind, current.wind.roundToInt())
-        tvMainWeather.text = current.weather.description.capitalize(Locale.getDefault())
+        tvMainWeather.text = current.weather[0].description.capitalize(Locale.getDefault())
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -121,5 +140,6 @@ class MainActivity : AppCompatActivity(), Statable {
     companion object {
         const val PERMISSIONS_REQUEST_CODE = 1
         const val BASE_IMG_URL = "https://openweathermap.org/img/wn/"
+        val Moscow = CityItem(55.7617, 37.6067, "Moscow", "RU")
     }
 }

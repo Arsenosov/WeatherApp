@@ -10,5 +10,5 @@ data class FutureWeatherSummary(
     @SerializedName("wind_speed")
     val wind: Double,
     @SerializedName("weather")
-    val weather: Weather
+    val weather: List<Weather>
 )

@@ -1,16 +1,17 @@
 package com.arsenosov.weatherapp.mainactivity
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Application
 import android.content.pm.PackageManager
-import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.arsenosov.weatherapp.App
 import com.arsenosov.weatherapp.App.Companion.API_KEY
+import com.arsenosov.weatherapp.BuildConfig
 import com.arsenosov.weatherapp.city.CityApi
 import com.arsenosov.weatherapp.city.CityItem
 import com.arsenosov.weatherapp.util.State
@@ -38,17 +39,21 @@ class MainViewModel(app: Application): AndroidViewModel(app) {
         errorLive.value = "Unknown"
     }
 
-    fun getLocation(activity: Activity) {
-        val fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(activity)
-        val task = fusedLocationProviderClient.lastLocation
-
+    fun requestLocationPermission(activity: Activity) {
         if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(activity,
                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
                 MainActivity.PERMISSIONS_REQUEST_CODE
             )
-            return
+        } else {
+            getLocation(activity)
         }
+    }
+
+    @SuppressLint("MissingPermission")
+    fun getLocation(activity: Activity) {
+        val fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(activity)
+        val task = fusedLocationProviderClient.lastLocation
 
         task.addOnSuccessListener {
             viewModelScope.launch {
@@ -57,7 +62,8 @@ class MainViewModel(app: Application): AndroidViewModel(app) {
                     cityLive.value = result[0]
                     loadWeather(result[0])
                 } catch (e: Exception) {
-                    Toast.makeText(activity.baseContext, "task.addOnSuccess catch", Toast.LENGTH_LONG).show()
+                    if (BuildConfig.DEBUG)
+                        e.printStackTrace()
                     stateLive.value = State.ERROR
                     errorLive.value = e.message
                 }
@@ -72,7 +78,8 @@ class MainViewModel(app: Application): AndroidViewModel(app) {
                 weatherLive.value = result
                 stateLive.value = State.SUCCESSFUL
             } catch (e: Exception) {
-                Toast.makeText(getApplication<Application>().applicationContext, "loadWeather", Toast.LENGTH_LONG).show()
+                if (BuildConfig.DEBUG)
+                    e.printStackTrace()
                 stateLive.value = State.ERROR
                 errorLive.value = e.message
             }

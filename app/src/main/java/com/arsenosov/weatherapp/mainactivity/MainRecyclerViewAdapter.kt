@@ -31,10 +31,10 @@ class MainRecyclerViewAdapter(private var weatherList: List<FutureWeatherSummary
     class MainViewHolder(private val view: View): RecyclerView.ViewHolder(view) {
         fun bind(weather: FutureWeatherSummary) {
             Glide.with(view)
-                .load("$BASE_IMG_URL${weather.weather.icon}.png")
+                .load("$BASE_IMG_URL${weather.weather[0].icon}.png")
                 .into(view.ivItemWeather)
             view.tvItemDate.text = DateFormat.format("dd.MM.yyyy", Date(weather.dt*1000))
-            view.tvItemWeather.text = weather.weather.description.capitalize(Locale.getDefault())
+            view.tvItemWeather.text = weather.weather[0].description.capitalize(Locale.getDefault())
             view.tvItemTemperature.text = view.context.resources.getString(R.string.weather_temperature, weather.temp.temp.roundToInt())
             view.tvItemWind.text = view.context.resources.getString(R.string.weather_wind, weather.wind.roundToInt())
         }

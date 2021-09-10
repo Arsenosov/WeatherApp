@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.arsenosov.weatherapp.App
 import com.arsenosov.weatherapp.App.Companion.API_KEY
+import com.arsenosov.weatherapp.BuildConfig
 import com.arsenosov.weatherapp.city.CityApi
 import com.arsenosov.weatherapp.city.CityItem
 import com.arsenosov.weatherapp.util.State
@@ -28,6 +29,8 @@ class SearchViewModel(app: Application): AndroidViewModel(app) {
                 citiesLive.value = result
                 stateLive.value = State.SUCCESSFUL
             } catch (e: Exception) {
+                if (BuildConfig.DEBUG)
+                    e.printStackTrace()
                 stateLive.value = State.ERROR
                 errorLive.value = "An error has occurred. Check your connection or try again later."
             }
