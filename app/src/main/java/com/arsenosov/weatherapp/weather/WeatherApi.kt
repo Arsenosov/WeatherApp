@@ -9,6 +9,6 @@ interface WeatherApi {
                                    @Query("lon") lon: Double,
                                    @Query("appId") appId: String,
                                    @Query("units") units: String = "metric",
-                                   @Query("exclude") exclude: String = "hourly,minutely,alerts",
+                                   @Query("exclude") exclude: String = "minutely,alerts",
                                    @Query("lang") lang: String = "en"): WeatherRequestResult
 }

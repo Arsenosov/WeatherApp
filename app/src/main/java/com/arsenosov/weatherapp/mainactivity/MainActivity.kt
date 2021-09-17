@@ -28,7 +28,8 @@ import kotlin.math.roundToInt
 class MainActivity : AppCompatActivity(), Statable {
 
     private lateinit var myMainViewModel: MainViewModel
-    private lateinit var adapter: MainRecyclerViewAdapter
+    private lateinit var adapterFuture: MainFutureRecyclerViewAdapter
+    private lateinit var adapterHourly: MainHourlyRecyclerViewAdapter
     private var city: CityItem? = null
 
     override var state: State = State.LOADING
@@ -72,12 +73,16 @@ class MainActivity : AppCompatActivity(), Statable {
             refreshUI(it)
         })
 
-        adapter = MainRecyclerViewAdapter(emptyList())
+        adapterFuture = MainFutureRecyclerViewAdapter(emptyList())
         rvFutureWeather.layoutManager = LinearLayoutManager(this)
-        rvFutureWeather.adapter = adapter
+        rvFutureWeather.adapter = adapterFuture
         rvFutureWeather.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
 
-        //if (city == null)
+        adapterHourly = MainHourlyRecyclerViewAdapter(emptyList())
+        rvHourlyWeather.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        rvHourlyWeather.adapter = adapterHourly
+        rvHourlyWeather.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.HORIZONTAL))
+
         myMainViewModel.requestLocationPermission(this)
     }
 
@@ -104,7 +109,8 @@ class MainActivity : AppCompatActivity(), Statable {
     }
 
     private fun refreshUI(request: WeatherRequestResult) {
-        adapter.refreshItems(request.futureWeather)
+        adapterFuture.refreshItems(request.futureWeather)
+        adapterHourly.refreshItems(request.hourlyWeather)
         val current = request.currentWeather
         Glide.with(this)
             .load("$BASE_IMG_URL${current.weather[0].icon}.png")

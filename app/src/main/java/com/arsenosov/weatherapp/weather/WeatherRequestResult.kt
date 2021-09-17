@@ -6,5 +6,7 @@ data class WeatherRequestResult(
     @SerializedName("current")
     val currentWeather: CurrentWeatherSummary,
     @SerializedName("daily")
-    val futureWeather: List<FutureWeatherSummary>
+    val futureWeather: List<FutureWeatherSummary>,
+    @SerializedName("hourly")
+    val hourlyWeather: List<HourlyWeatherSummary>
 )

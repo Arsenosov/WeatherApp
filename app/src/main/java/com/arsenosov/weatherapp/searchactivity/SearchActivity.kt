@@ -17,7 +17,7 @@ import kotlinx.android.synthetic.main.activity_search.*
 class SearchActivity : AppCompatActivity(), Statable, SearchView.OnQueryTextListener {
 
     private lateinit var myViewModel: SearchViewModel
-    private lateinit var adapter: RecyclerViewAdapter
+    private lateinit var adapterSearch: SearchRecyclerViewAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,11 +34,11 @@ class SearchActivity : AppCompatActivity(), Statable, SearchView.OnQueryTextList
             tvSearchError.text = it
         })
 
-        adapter = RecyclerViewAdapter(emptyList()) {
+        adapterSearch = SearchRecyclerViewAdapter(emptyList()) {
             returnItem(it)
         }
         rvSearchCities.layoutManager = LinearLayoutManager(this)
-        rvSearchCities.adapter = adapter
+        rvSearchCities.adapter = adapterSearch
     }
 
     private fun returnItem(item: CityItem) {
@@ -49,7 +49,7 @@ class SearchActivity : AppCompatActivity(), Statable, SearchView.OnQueryTextList
     }
 
     private fun refreshRecyclerView(list: List<CityItem>?) {
-        list?.let { adapter.refreshItems(it) }
+        list?.let { adapterSearch.refreshItems(it) }
     }
 
     override var state: State = State.LOADING

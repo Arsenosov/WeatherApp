@@ -9,15 +9,16 @@ import com.arsenosov.weatherapp.R
 import com.arsenosov.weatherapp.mainactivity.MainActivity.Companion.BASE_IMG_URL
 import com.arsenosov.weatherapp.weather.FutureWeatherSummary
 import com.bumptech.glide.Glide
-import kotlinx.android.synthetic.main.weather_item.view.*
+import kotlinx.android.synthetic.main.future_weather_item.view.*
 import java.util.*
 import kotlin.math.roundToInt
 
-class MainRecyclerViewAdapter(private var weatherList: List<FutureWeatherSummary>):
-    RecyclerView.Adapter<MainRecyclerViewAdapter.MainViewHolder>() {
+class MainFutureRecyclerViewAdapter(private var weatherList: List<FutureWeatherSummary>
+    //, private val listener: (FutureWeatherSummary) -> (Unit)
+    ): RecyclerView.Adapter<MainFutureRecyclerViewAdapter.MainViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-        MainViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.weather_item, parent, false))
+        MainViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.future_weather_item, parent, false))
 
     override fun onBindViewHolder(holder: MainViewHolder, position: Int) = holder.bind(weatherList[position])
 
