@@ -77,6 +77,9 @@ class MainActivity : AppCompatActivity(), Statable {
         myMainViewModel.weatherLive.observe(this, {
             refreshUI(it)
         })
+        myMainViewModel.errorLive.observe(this, {
+            bindingActivityMain.tvMainError.text = it
+        })
 
         adapterFuture = MainFutureRecyclerViewAdapter(emptyList())
         bindingLayoutMain.rvFutureWeather.layoutManager = LinearLayoutManager(this)
@@ -98,6 +101,11 @@ class MainActivity : AppCompatActivity(), Statable {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        myMainViewModel.checkWeatherActuality()
+    }
+
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
@@ -107,6 +115,7 @@ class MainActivity : AppCompatActivity(), Statable {
         if (requestCode == PERMISSIONS_REQUEST_CODE)
             if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
                 Toast.makeText(this, "Choosing Moscow, RU as a default location", Toast.LENGTH_LONG).show()
+                //TODO("replace text in toast with translatable")
                 checkRefreshUI(Moscow)
             } else {
                 myMainViewModel.getLocation(this)

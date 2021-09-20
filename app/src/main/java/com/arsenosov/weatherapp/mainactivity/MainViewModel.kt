@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Application
 import android.content.pm.PackageManager
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
@@ -19,6 +20,7 @@ import com.arsenosov.weatherapp.weather.WeatherApi
 import com.arsenosov.weatherapp.weather.WeatherRequestResult
 import com.google.android.gms.location.LocationServices
 import kotlinx.coroutines.launch
+import java.util.*
 import javax.inject.Inject
 
 class MainViewModel(app: Application): AndroidViewModel(app) {
@@ -37,6 +39,18 @@ class MainViewModel(app: Application): AndroidViewModel(app) {
         (app as App).appComponent.inject(this)
         stateLive.value = State.LOADING
         errorLive.value = "Unknown"
+    }
+
+    fun checkWeatherActuality() {
+        val now = Date()
+        val weatherLoaded = weatherLive.value?.currentWeather?.dt?.times(1000)?.let { Date(it) }
+        //if more than 10 minutes passed the data is updated
+        if (weatherLoaded != null && (now.time - weatherLoaded.time) / 60000 >= 10) {
+            Toast.makeText(getApplication<Application>().applicationContext, "The data is outdated, loading new data...", Toast.LENGTH_LONG).show()
+            //TODO("replace text in toast with translatable")
+            stateLive.value = State.LOADING
+            cityLive.value?.let { loadWeather(it) }
+        }
     }
 
     fun requestLocationPermission(activity: Activity) {
