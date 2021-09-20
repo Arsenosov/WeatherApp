@@ -14,14 +14,14 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.arsenosov.weatherapp.R
 import com.arsenosov.weatherapp.city.CityItem
+import com.arsenosov.weatherapp.databinding.ActivityMainBinding
+import com.arsenosov.weatherapp.databinding.LayoutMainBinding
 import com.arsenosov.weatherapp.searchactivity.SearchActivity
 import com.arsenosov.weatherapp.searchactivity.SearchActivity.Companion.SEARCH_RESULT_CITY
 import com.arsenosov.weatherapp.util.Statable
 import com.arsenosov.weatherapp.util.State
 import com.arsenosov.weatherapp.weather.WeatherRequestResult
 import com.bumptech.glide.Glide
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.layout_main.*
 import java.util.*
 import kotlin.math.roundToInt
 
@@ -30,6 +30,8 @@ class MainActivity : AppCompatActivity(), Statable {
     private lateinit var myMainViewModel: MainViewModel
     private lateinit var adapterFuture: MainFutureRecyclerViewAdapter
     private lateinit var adapterHourly: MainHourlyRecyclerViewAdapter
+    private lateinit var bindingActivityMain: ActivityMainBinding
+    private lateinit var bindingLayoutMain: LayoutMainBinding
     private var city: CityItem? = null
 
     override var state: State = State.LOADING
@@ -41,26 +43,29 @@ class MainActivity : AppCompatActivity(), Statable {
     override fun changeUI(state: State) {
         when (state) {
             State.LOADING -> {
-                pbMain.visibility = View.VISIBLE
-                mainViewGroup.visibility = View.GONE
-                tvMainError.visibility = View.GONE
+                bindingActivityMain.pbMain.visibility = View.VISIBLE
+                bindingLayoutMain.mainLayoutGroup.visibility = View.GONE
+                bindingActivityMain.tvMainError.visibility = View.GONE
             }
             State.ERROR -> {
-                pbMain.visibility = View.GONE
-                mainViewGroup.visibility = View.GONE
-                tvMainError.visibility = View.VISIBLE
+                bindingActivityMain.pbMain.visibility = View.GONE
+                bindingLayoutMain.mainLayoutGroup.visibility = View.GONE
+                bindingActivityMain.tvMainError.visibility = View.VISIBLE
             }
             State.SUCCESSFUL -> {
-                pbMain.visibility = View.GONE
-                mainViewGroup.visibility = View.VISIBLE
-                tvMainError.visibility = View.GONE
+                bindingActivityMain.pbMain.visibility = View.GONE
+                bindingLayoutMain.mainLayoutGroup.visibility = View.VISIBLE
+                bindingActivityMain.tvMainError.visibility = View.GONE
             }
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+
+        bindingActivityMain = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(bindingActivityMain.root)
+        bindingLayoutMain = bindingActivityMain.mainViewGroup
 
         myMainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
         myMainViewModel.cityLive.observe(this, {
@@ -74,14 +79,14 @@ class MainActivity : AppCompatActivity(), Statable {
         })
 
         adapterFuture = MainFutureRecyclerViewAdapter(emptyList())
-        rvFutureWeather.layoutManager = LinearLayoutManager(this)
-        rvFutureWeather.adapter = adapterFuture
-        rvFutureWeather.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
+        bindingLayoutMain.rvFutureWeather.layoutManager = LinearLayoutManager(this)
+        bindingLayoutMain.rvFutureWeather.adapter = adapterFuture
+        bindingLayoutMain.rvFutureWeather.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
 
         adapterHourly = MainHourlyRecyclerViewAdapter(emptyList())
-        rvHourlyWeather.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-        rvHourlyWeather.adapter = adapterHourly
-        rvHourlyWeather.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.HORIZONTAL))
+        bindingLayoutMain.rvHourlyWeather.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        bindingLayoutMain.rvHourlyWeather.adapter = adapterHourly
+        bindingLayoutMain.rvHourlyWeather.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.HORIZONTAL))
 
         myMainViewModel.requestLocationPermission(this)
     }
@@ -114,12 +119,12 @@ class MainActivity : AppCompatActivity(), Statable {
         val current = request.currentWeather
         Glide.with(this)
             .load("$BASE_IMG_URL${current.weather[0].icon}.png")
-            .into(ivMainWeather)
-        tvCurrentCity.text = city.toString()
-        tvMainTemperature.text = resources.getString(R.string.weather_temperature, current.temp.roundToInt())
-        tvMainFeelsTemperature.text = resources.getString(R.string.weather_feels_temperature, current.feelsTemp.roundToInt())
-        tvMainWind.text = resources.getString(R.string.weather_wind, current.wind.roundToInt())
-        tvMainWeather.text = current.weather[0].description.capitalize(Locale.getDefault())
+            .into(bindingLayoutMain.ivMainWeather)
+        bindingLayoutMain.tvCurrentCity.text = city.toString()
+        bindingLayoutMain.tvMainTemperature.text = resources.getString(R.string.weather_temperature, current.temp.roundToInt())
+        bindingLayoutMain.tvMainFeelsTemperature.text = resources.getString(R.string.weather_feels_temperature, current.feelsTemp.roundToInt())
+        bindingLayoutMain.tvMainWind.text = resources.getString(R.string.weather_wind, current.wind.roundToInt())
+        bindingLayoutMain.tvMainWeather.text = current.weather[0].description.capitalize(Locale.getDefault())
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

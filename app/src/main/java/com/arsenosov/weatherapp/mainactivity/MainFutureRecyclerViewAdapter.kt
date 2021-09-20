@@ -6,10 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.arsenosov.weatherapp.R
+import com.arsenosov.weatherapp.databinding.FutureWeatherItemBinding
 import com.arsenosov.weatherapp.mainactivity.MainActivity.Companion.BASE_IMG_URL
 import com.arsenosov.weatherapp.weather.FutureWeatherSummary
 import com.bumptech.glide.Glide
-import kotlinx.android.synthetic.main.future_weather_item.view.*
 import java.util.*
 import kotlin.math.roundToInt
 
@@ -30,14 +30,15 @@ class MainFutureRecyclerViewAdapter(private var weatherList: List<FutureWeatherS
     }
 
     class MainViewHolder(private val view: View): RecyclerView.ViewHolder(view) {
+        private val binding = FutureWeatherItemBinding.bind(view)
         fun bind(weather: FutureWeatherSummary) {
             Glide.with(view)
                 .load("$BASE_IMG_URL${weather.weather[0].icon}.png")
-                .into(view.ivItemWeather)
-            view.tvItemDate.text = DateFormat.format("dd.MM.yyyy", Date(weather.dt*1000))
-            view.tvItemWeather.text = weather.weather[0].description.capitalize(Locale.getDefault())
-            view.tvItemTemperature.text = view.context.resources.getString(R.string.weather_temperature, weather.temp.temp.roundToInt())
-            view.tvItemWind.text = view.context.resources.getString(R.string.weather_wind, weather.wind.roundToInt())
+                .into(binding.ivItemWeather)
+            binding.tvItemDate.text = DateFormat.format("dd.MM.yyyy", Date(weather.dt*1000))
+            binding.tvItemWeather.text = weather.weather[0].description.capitalize(Locale.getDefault())
+            binding.tvItemTemperature.text = view.context.resources.getString(R.string.weather_temperature, weather.temp.temp.roundToInt())
+            binding.tvItemWind.text = view.context.resources.getString(R.string.weather_wind, weather.wind.roundToInt())
         }
     }
 }

@@ -6,16 +6,16 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.arsenosov.weatherapp.R
 import com.arsenosov.weatherapp.city.CityItem
-import kotlinx.android.synthetic.main.search_item.view.*
+import com.arsenosov.weatherapp.databinding.SearchItemBinding
 
 class SearchRecyclerViewAdapter(
     private var stringList:List<CityItem>,
     private val listener: (CityItem) -> (Unit)
 ): RecyclerView.Adapter<SearchRecyclerViewAdapter.ViewHolder>() {
-
     class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
+        private val binding = SearchItemBinding.bind(itemView)
         fun bind(item: CityItem, listener: (CityItem) -> Unit) = with(itemView) {
-            tvSearchItem.text = item.toString()
+            binding.tvSearchItem.text = item.toString()
             setOnClickListener { listener(item) }
         }
     }

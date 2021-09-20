@@ -10,18 +10,21 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.arsenosov.weatherapp.R
 import com.arsenosov.weatherapp.city.CityItem
+import com.arsenosov.weatherapp.databinding.ActivitySearchBinding
 import com.arsenosov.weatherapp.util.Statable
 import com.arsenosov.weatherapp.util.State
-import kotlinx.android.synthetic.main.activity_search.*
 
 class SearchActivity : AppCompatActivity(), Statable, SearchView.OnQueryTextListener {
 
     private lateinit var myViewModel: SearchViewModel
     private lateinit var adapterSearch: SearchRecyclerViewAdapter
+    private lateinit var binding: ActivitySearchBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_search)
+
+        binding = ActivitySearchBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         myViewModel = ViewModelProvider(this)[SearchViewModel::class.java]
         myViewModel.stateLive.observe(this, {
@@ -31,14 +34,14 @@ class SearchActivity : AppCompatActivity(), Statable, SearchView.OnQueryTextList
             refreshRecyclerView(it)
         })
         myViewModel.errorLive.observe(this, {
-            tvSearchError.text = it
+            binding.tvSearchError.text = it
         })
 
         adapterSearch = SearchRecyclerViewAdapter(emptyList()) {
             returnItem(it)
         }
-        rvSearchCities.layoutManager = LinearLayoutManager(this)
-        rvSearchCities.adapter = adapterSearch
+        binding.rvSearchCities.layoutManager = LinearLayoutManager(this)
+        binding.rvSearchCities.adapter = adapterSearch
     }
 
     private fun returnItem(item: CityItem) {
@@ -61,12 +64,12 @@ class SearchActivity : AppCompatActivity(), Statable, SearchView.OnQueryTextList
     override fun changeUI(state: State) {
         when (state) {
             State.ERROR -> {
-                tvSearchError.visibility = View.VISIBLE
-                rvSearchCities.visibility = View.GONE
+                binding.tvSearchError.visibility = View.VISIBLE
+                binding.rvSearchCities.visibility = View.GONE
             }
             State.SUCCESSFUL -> {
-                tvSearchError.visibility = View.GONE
-                rvSearchCities.visibility = View.VISIBLE
+                binding.tvSearchError.visibility = View.GONE
+                binding.rvSearchCities.visibility = View.VISIBLE
             }
             State.LOADING ->{}
         }

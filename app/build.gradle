@@ -2,15 +2,16 @@ plugins {
     id 'com.android.application'
     id 'kotlin-android'
     id 'kotlin-kapt'
-    id 'kotlin-android-extensions'
+    id 'kotlin-parcelize'
 }
 
 android {
-    androidExtensions {
-        experimental = true
-    }
     compileSdkVersion 30
     buildToolsVersion "30.0.2"
+
+    buildFeatures {
+        viewBinding true
+    }
 
     defaultConfig {
         applicationId "com.arsenosov.weatherapp"
@@ -35,6 +36,10 @@ android {
     }
     kotlinOptions {
         jvmTarget = '1.8'
+    }
+
+    kapt {
+        generateStubs true
     }
 }
 
