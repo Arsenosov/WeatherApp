@@ -1,4 +1,4 @@
-package com.arsenosov.weatherapp.dagger
+package com.arsenosov.weatherapp.di
 
 import com.arsenosov.weatherapp.city.CityApi
 import dagger.Module

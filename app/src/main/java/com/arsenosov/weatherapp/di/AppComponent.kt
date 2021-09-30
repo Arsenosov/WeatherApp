@@ -1,4 +1,4 @@
-package com.arsenosov.weatherapp.dagger
+package com.arsenosov.weatherapp.di
 
 import com.arsenosov.weatherapp.mainactivity.MainViewModel
 import com.arsenosov.weatherapp.searchactivity.SearchViewModel

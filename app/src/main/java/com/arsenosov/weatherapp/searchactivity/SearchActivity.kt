@@ -26,6 +26,11 @@ class SearchActivity : AppCompatActivity(), Statable, SearchView.OnQueryTextList
         binding = ActivitySearchBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        setupViewModel()
+        setupRecyclerView()
+    }
+
+    private fun setupViewModel() {
         myViewModel = ViewModelProvider(this)[SearchViewModel::class.java]
         myViewModel.stateLive.observe(this, {
             state = it
@@ -36,7 +41,9 @@ class SearchActivity : AppCompatActivity(), Statable, SearchView.OnQueryTextList
         myViewModel.errorLive.observe(this, {
             binding.tvSearchError.text = it
         })
+    }
 
+    private fun setupRecyclerView() {
         adapterSearch = SearchRecyclerViewAdapter(emptyList()) {
             returnItem(it)
         }
@@ -61,7 +68,7 @@ class SearchActivity : AppCompatActivity(), Statable, SearchView.OnQueryTextList
             changeUI(field)
         }
 
-    override fun changeUI(state: State) {
+    private fun changeUI(state: State) {
         when (state) {
             State.ERROR -> {
                 binding.tvSearchError.visibility = View.VISIBLE
@@ -80,6 +87,7 @@ class SearchActivity : AppCompatActivity(), Statable, SearchView.OnQueryTextList
 
         val searchItem = menu?.findItem(R.id.search)
         val searchView = searchItem?.actionView as SearchView
+        searchView.queryHint = "Search for a city..."
         searchView.setOnQueryTextListener(this)
         return super.onCreateOptionsMenu(menu)
     }
@@ -89,9 +97,7 @@ class SearchActivity : AppCompatActivity(), Statable, SearchView.OnQueryTextList
         return false
     }
 
-    override fun onQueryTextChange(newText: String?): Boolean {
-        return false
-    }
+    override fun onQueryTextChange(newText: String?): Boolean = false
 
     companion object {
         const val SEARCH_RESULT_CITY = "SEARCH_RESULT_CITY"

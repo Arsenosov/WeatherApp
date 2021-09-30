@@ -6,9 +6,10 @@ import android.app.Activity
 import android.app.Application
 import android.content.pm.PackageManager
 import android.widget.Toast
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.arsenosov.weatherapp.App
 import com.arsenosov.weatherapp.App.Companion.API_KEY
@@ -30,15 +31,13 @@ class MainViewModel(app: Application): AndroidViewModel(app) {
     @Inject
     lateinit var weatherApi: WeatherApi
 
-    val cityLive = MutableLiveData<CityItem>()
-    val stateLive = MutableLiveData<State>()
-    val errorLive = MutableLiveData<String>()
-    val weatherLive = MutableLiveData<WeatherRequestResult>()
+    val cityLive: MutableState<CityItem?> = mutableStateOf(null)
+    val stateLive: MutableState<State> = mutableStateOf(State.LOADING)
+    val errorLive: MutableState<String> = mutableStateOf("Unknown")
+    val weatherLive: MutableState<WeatherRequestResult?> = mutableStateOf(null)
 
     init {
         (app as App).appComponent.inject(this)
-        stateLive.value = State.LOADING
-        errorLive.value = "Unknown"
     }
 
     fun checkWeatherActuality() {
@@ -79,7 +78,7 @@ class MainViewModel(app: Application): AndroidViewModel(app) {
                     if (BuildConfig.DEBUG)
                         e.printStackTrace()
                     stateLive.value = State.ERROR
-                    errorLive.value = e.message
+                    errorLive.value = e.message.toString()
                 }
             }
         }
@@ -88,6 +87,7 @@ class MainViewModel(app: Application): AndroidViewModel(app) {
     fun loadWeather(city: CityItem) {
         viewModelScope.launch {
             try {
+                cityLive.value = city
                 val result = weatherApi.getWeatherByCoords(city.lat, city.lon, API_KEY)
                 weatherLive.value = result
                 stateLive.value = State.SUCCESSFUL
@@ -95,7 +95,7 @@ class MainViewModel(app: Application): AndroidViewModel(app) {
                 if (BuildConfig.DEBUG)
                     e.printStackTrace()
                 stateLive.value = State.ERROR
-                errorLive.value = e.message
+                errorLive.value = e.message.toString()
             }
         }
     }

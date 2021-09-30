@@ -1,10 +1,10 @@
 package com.arsenosov.weatherapp
 
 import android.app.Application
-import com.arsenosov.weatherapp.dagger.AppComponent
-import com.arsenosov.weatherapp.dagger.CityModule
-import com.arsenosov.weatherapp.dagger.DaggerAppComponent
-import com.arsenosov.weatherapp.dagger.WeatherModule
+import com.arsenosov.weatherapp.di.AppComponent
+import com.arsenosov.weatherapp.di.CityModule
+import com.arsenosov.weatherapp.di.DaggerAppComponent
+import com.arsenosov.weatherapp.di.WeatherModule
 
 class App: Application() {
     lateinit var appComponent: AppComponent
